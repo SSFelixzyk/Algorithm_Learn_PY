@@ -258,3 +258,109 @@ def subarraySum(nums, k):
             count += times
 
     return count
+
+def maxSlidingWindow(nums, k):
+    # 给定一个整数数组 nums 和一个大小为 k 的滑动窗口，从左到右移动窗口，返回滑动窗口中的最大值。
+    # 你可以假设 nums 的长度至少为 k。
+    """
+    :type nums: List[int]
+    :type k: int
+    :rtype: List[int]
+    """
+    n = len(nums)
+    if n <= k:
+        return [max(nums)]
+    if k == 1:
+        return nums
+
+    # 维护双端队列
+    que = collections.deque()
+
+    def que_add(index):
+        if len(que) == 0:
+            que.append(index)
+            return
+    
+        if que[0] < index - k + 1:
+            que.popleft()
+
+        v = nums[index]
+        if nums[que[0]] < v:
+            que.clear()
+            que.append(index)
+            return
+        while que and nums[que[-1]] < v:
+            que.pop()
+        
+        que.append(index)
+        return
+
+    # 初始化队列，前k个数字
+    for i in range(k):
+        que_add(i)
+
+    res = [nums[que[0]]]
+    for i in range(k,n):
+        que_add(i)
+        res.append(nums[que[0]])
+    
+    return res
+
+def minWindow(s, t):
+    """
+    :type s: str
+    :type t: str
+    :rtype: str
+    """
+    count_t = collections.Counter(t)
+    
+    left = 0
+    n = len(s)
+    count_s = collections.Counter()
+    min_len = n+1
+    res = ""
+
+    count = 0 # 用来判断窗口中字母数量是否大于等于t字母数量
+
+    for i in range(n):
+    # i是右边界
+        c = s[i]
+
+        # 不是目标字母，跳过
+        if c not in count_t:
+            continue
+        
+        # 如果窗口字母数量小于t, count增加，直到count==len(t), 此时，窗口一定包含t
+        if count_s[c] < count_t[c]:
+            count+=1
+        
+        count_s[c]+=1
+
+        # 此时窗口包含t
+        while count==len(t):
+            # 如果left>right, 跳出循环
+            if left > i:
+                break
+
+            l = s[left]
+            #如果左边界的字母不在t中，说明不是最短子串，左边界右移
+            if l not in count_t:
+                left+=1
+                continue
+            
+            #如果左边界的字母在t中，说明可能是其中一个最短子串，更新结果
+            else:
+                # 该字母出现次数减少1
+                count_s[l]-=1
+                # 如果删除该字母后，不满足子串条件，更新答案，跳出循环
+                if count_s[l] < count_t[l]:
+                    sub = s[left:i+1]
+                    count-=1
+                    if len(sub) < min_len:
+                        min_len = len(sub)
+                        res = sub
+
+                left+=1
+                
+    
+    return res
