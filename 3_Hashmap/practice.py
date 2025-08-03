@@ -14,6 +14,3 @@ def isAngram(s,t):
     
     return True
 
-s = set("listen")
-for i in s:
-    print(i, end=' ')
