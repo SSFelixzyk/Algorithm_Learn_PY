@@ -364,3 +364,21 @@ def minWindow(s, t):
                 
     
     return res
+
+def maxSubArray(nums):
+    """
+    :type nums: List[int]
+    :rtype: int
+    """
+
+    n = len(nums)
+    pre = 0
+    res = nums[0]
+
+    for i in range(n):
+        pre = max(pre+nums[i], nums[i])
+        res = max(res, pre)
+
+    return res
+
+
